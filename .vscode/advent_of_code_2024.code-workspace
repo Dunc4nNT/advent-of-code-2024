@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "name": ".root",
+            "path": "../",
+        },
+        {
+            "name": "puzzles",
+            "path": "../data/aoc/"
+        },
+        {
+            "name": "rust",
+            "path": "../rust/"
+        }
+    ],
+}
