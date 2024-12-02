@@ -1,11 +1,37 @@
 use anyhow::{Ok, Result};
+use itertools::Itertools;
 
-fn part1(input: &str) -> Result<usize> {
-    Ok(0)
+fn get_id_vecs(input: &str) -> (Vec<u32>, Vec<u32>) {
+    input
+        .lines()
+        .filter_map(|line| line.split_whitespace().next_tuple())
+        .map(|(left_id, right_id)| (left_id.parse::<u32>().unwrap(), right_id.parse::<u32>().unwrap()))
+        .unzip()
 }
 
-fn part2(input: &str) -> Result<usize> {
-    Ok(0)
+fn part1(input: &str) -> Result<u32> {
+    let (mut left_ids , mut right_ids): (Vec<u32>, Vec<u32>) = get_id_vecs(input);
+    left_ids.sort();
+    right_ids.sort();
+
+    Ok(
+        left_ids
+            .iter()
+            .zip(right_ids.iter())
+            .map(|(i, j)| i.abs_diff(*j))
+            .sum()
+    )
+}
+
+fn part2(input: &str) -> Result<u32> {
+    let (left_ids , right_ids): (Vec<u32>, Vec<u32>) = get_id_vecs(input);
+
+    Ok(
+        left_ids
+            .iter()
+            .map(|i| i * right_ids.iter().filter(|&j| j == i).count() as u32)
+            .sum()
+    )
 }
 
 #[cfg(test)]
@@ -16,12 +42,12 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(EXAMPLE_INPUT).unwrap(), 0);
+        assert_eq!(part1(EXAMPLE_INPUT).unwrap(), 11);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(EXAMPLE_INPUT).unwrap(), 0);
+        assert_eq!(part2(EXAMPLE_INPUT).unwrap(), 31);
     }
 }
 
