@@ -1,3 +1,5 @@
+use std::time::{Duration, Instant};
+
 use anyhow::{Ok, Result};
 use itertools::Itertools;
 
@@ -54,8 +56,15 @@ mod tests {
 fn main() -> Result<()> {
     let input: &str = include_str!("../../../data/aoc/day01/input.txt");
 
-    println!("{:?}", part1(input)?);
-    println!("{:?}", part2(input)?);
+    let part1_start_time: Instant = Instant::now();
+    let part1_result: u32 = part1(input)?;
+    let part1_duration: Duration = part1_start_time.elapsed();
+    println!("Day 1 Part 1: {:?} ({:?})", part1_result, part1_duration);
+
+    let part2_start_time: Instant = Instant::now();
+    let part2_result: u32 = part2(input)?;
+    let part2_duration: Duration = part2_start_time.elapsed();
+    println!("Day 1 Part 2: {:?} ({:?})", part2_result, part2_duration);
 
     Ok(())
 }
