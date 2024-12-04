@@ -1,6 +1,7 @@
 use std::time::{Duration, Instant};
 
 use anyhow::{Ok, Result};
+use itertools::Itertools;
 
 fn get_reports(input: &str) -> Vec<Vec<u32>> {
     input
@@ -13,27 +14,42 @@ fn get_reports(input: &str) -> Vec<Vec<u32>> {
         .collect()
 }
 
-fn is_report_safe(report: Vec<u32>, tolerate_amount: u32) -> bool {
-    if report.len() <= 2 {
+fn is_report_safe(report: Vec<u32>) -> bool {
+    if report.len() <= 1 {
         return true;
     }
 
-    let mut prev: u32 = report[0];
-    let small_to_large: bool = report.first() < report.last();
-    let mut error_count: u32 = 0;
+    let is_small_to_large: bool = report
+        .iter()
+        .tuple_windows()
+        .all(|window: (&u32, &u32)| window.0 < window.1);
+    let is_large_to_small: bool = report
+        .iter()
+        .tuple_windows()
+        .all(|window: (&u32, &u32)| window.0 > window.1);
 
-    for &i in &report[1..] {
-        if (prev.abs_diff(i) >= 1) && (prev.abs_diff(i) <= 3) && (prev < i) == small_to_large {
-            prev = i;
-        } else {
-            error_count += 1;
-            if error_count > tolerate_amount {
-                return false;
-            }
+    let has_correct_spacings: bool = report.iter().tuple_windows().all(|window: (&u32, &u32)| {
+        (window.0.abs_diff(*window.1) >= 1) && (window.0.abs_diff(*window.1) <= 3)
+    });
+
+    return (is_small_to_large || is_large_to_small) && has_correct_spacings;
+}
+
+fn is_report_tolerable(report: Vec<u32>) -> bool {
+    if is_report_safe(report.to_vec()) {
+        return true;
+    }
+
+    for i in 0..report.len() {
+        let mut report_clone: Vec<u32> = report.clone();
+        report_clone.remove(i);
+
+        if is_report_safe(report_clone.to_vec()) {
+            return true;
         }
     }
 
-    return true;
+    return false;
 }
 
 fn part1(input: &str) -> Result<u32> {
@@ -41,7 +57,7 @@ fn part1(input: &str) -> Result<u32> {
     let mut safe_report_count: u32 = 0;
 
     for report in reports {
-        if is_report_safe(report.to_vec(), 0) {
+        if is_report_safe(report.to_vec()) {
             safe_report_count += 1;
         }
     }
@@ -54,7 +70,7 @@ fn part2(input: &str) -> Result<u32> {
     let mut safe_report_count: u32 = 0;
 
     for report in reports {
-        if is_report_safe(report.to_vec(), 1) {
+        if is_report_tolerable(report.to_vec()) {
             safe_report_count += 1;
         }
     }
