@@ -1,3 +1,4 @@
 # advent of code
 #  https://adventofcode.com/2024/about
-data/aoc/
+data/aoc/day*/*
+!data/aoc/day*/example*.txt
